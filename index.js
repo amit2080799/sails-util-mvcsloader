@@ -17,10 +17,6 @@ module.exports = function (sails) {
             require(__dirname + '/libs/config')(sails, dir);
         },
 
-        injectControllers: function (dir, cb) {
-            require(__dirname + '/libs/controllers')(sails, dir, cb);
-        },
-
         injectModels: function (dir, cb) {
             require(__dirname + '/libs/models')(sails, dir, cb);
         },
@@ -48,18 +44,17 @@ module.exports = function (sails) {
                 next = dir || function(){};
                 dir = tmp || {
                     models: __dirname + '/../../api/models',
-                    controllers: __dirname + '/../../api/controllers',
                     services: __dirname + '/../../api/services'
                 };
             }
-            
+
             // Backward compatibility, next and dir inverted
             else if(typeof next === 'object' && typeof dir === 'function') {
                 var tmp = next;
                 next = dir;
                 dir = tmp;
             }
-            
+
             // Be sure to have a callback
             next = next || function(){};
 
@@ -77,18 +72,6 @@ module.exports = function (sails) {
                         return next(err);
                     }
                     sails.log.info('User hook models loaded from ' + dir.models + '.');
-                    return next(null);
-                });
-            };
-
-            var loadControllers = function (next) {
-                self.injectControllers(dir.controllers, function (err) {
-                    if (err) {
-                        return next(err);
-                    }
-
-                    sails.log.info('User hook controllers loaded from ' + dir.controllers + '.');
-
                     return next(null);
                 });
             };
@@ -117,10 +100,6 @@ module.exports = function (sails) {
 
             if (dir.models) {
                 toLoad.push(loadModels);
-            }
-
-            if (dir.controllers) {
-                toLoad.push(loadControllers);
             }
 
             if (dir.services) {
